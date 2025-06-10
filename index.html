@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mona Lisa - Leonardo da Vinci</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: #e0f7fa;
+            color: #0277bd;
+        }
+
+        header {
+            background-color: #0277bd;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            border-bottom: 5px solid #01579b;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 40px;
+            max-width: 900px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 30px;
+            font-size: 2rem;
+            color: #01579b;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-top: 15px;
+            line-height: 1.8;
+        }
+
+        .mona-lisa-image {
+            display: block;
+            max-width: 50%;
+            height: auto;
+            margin: 30px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-left: 25%;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+            margin: 10px;
+            width: calc(33% - 20px);
+            transition: background-color 0.3s ease;
+        }
+
+        #voorleesKnop {
+            background-color: #66bb6a;
+        }
+
+        #voorleesKnop:hover {
+            background-color: #388e3c;
+        }
+
+        #herstartKnop {
+            background-color: #e53935;
+        }
+
+        #herstartKnop:hover {
+            background-color: #b71c1c;
+        }
+
+        #pauzeKnop {
+            background-color: #fb8c00;
+        }
+
+        #pauzeKnop:hover {
+            background-color: #ef6c00;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            background-color: #0277bd;
+            color: white;
+            padding: 15px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            border-top: 5px solid #01579b;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Mona Lisa - Het meesterwerk van Leonardo da Vinci</h1>
+    </header>
+
+    <section class="content">
+        <h2>Over de Mona Lisa</h2>
+        <p id="tekst1">De Mona Lisa is een wereldberoemd schilderij van de Italiaanse kunstenaar Leonardo da Vinci. Het werd geschilderd tussen 1503 en 1506 en toont een vrouw met een mysterieuze glimlach, wat haar uitdrukking bijzonder maakt.</p>
+
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/800px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg" alt="Mona Lisa" class="mona-lisa-image">
+
+        <h2>Techniek en Stijl</h2>
+        <p id="tekst2">De sfumato-techniek die Da Vinci gebruikte, zorgt voor zachte overgangen tussen licht en schaduw, wat de verfijning en realisme van het schilderij versterkt. De Mona Lisa lijkt je overal te volgen met haar blik, wat bijdraagt aan haar mysterie.</p>
+
+        <h2>Geschiedenis</h2>
+        <p id="tekst3">In 1911 werd het schilderij gestolen, maar twee jaar later werd het teruggevonden. Tegenwoordig hangt het achter kogelvrij glas in het Louvre in Parijs, waar het miljoenen bezoekers per jaar trekt.</p>
+
+        <h2>Betekenis en Invloed</h2>
+        <p id="tekst4">De Mona Lisa blijft een van de meest invloedrijke en besproken kunstwerken in de geschiedenis, en haar mysterieuze glimlach blijft mensen over de hele wereld fascineren.</p>
+    </section>
+
+    <div class="button-container">
+        <button id="voorleesKnop">Lees tekst voor</button>
+        <button id="pauzeKnop">Pauzeer</button>
+        <button id="herstartKnop">Opnieuw</button>
+    </div>
+
+    <script>
+        const synth = window.speechSynthesis;
+        let utterance;
+        let isPaused = false;
+
+        function startVoorlezen() {
+            const tekstElementen = document.querySelectorAll("p");
+            let index = 0;
+
+            // Reset alle markeringen
+            tekstElementen.forEach(p => p.classList.remove("highlight"));
+
+            function leesVolgendeRegel() {
+                if (index < tekstElementen.length) {
+                    // Markeer huidige regel
+                    tekstElementen.forEach(p => p.classList.remove("highlight"));
+                    tekstElementen[index].classList.add("highlight");
+
+                    // Maak een nieuwe utterance voor de huidige regel
+                    utterance = new SpeechSynthesisUtterance(tekstElementen[index].innerText);
+                    utterance.lang = 'nl-NL';
+                    utterance.pitch = 1;
+                    utterance.rate = 0.9;
+
+                    // Ga naar de volgende regel als de huidige klaar is
+                    utterance.onend = () => {
+                        index++;
+                        setTimeout(leesVolgendeRegel, 200); // Vertraging voor betere synchronisatie
+                    };
+
+                    synth.speak(utterance);
+                }
+            }
+
+            leesVolgendeRegel();
+        }
+
+        document.getElementById("voorleesKnop").addEventListener("click", function() {
+            if (synth.paused) {
+                synth.resume();
+            } else {
+                startVoorlezen();
+            }
+        });
+
+        document.getElementById("pauzeKnop").addEventListener("click", function() {
+            if (synth.speaking && !isPaused) {
+                synth.pause();
+                isPaused = true;
+                this.innerText = "Verder";
+            } else if (isPaused) {
+                synth.resume();
+                isPaused = false;
+                this.innerText = "Pauzeer";
+            }
+        });
+
+        document.getElementById("herstartKnop").addEventListener("click", function() {
+            synth.cancel();
+            startVoorlezen();
+        });
+    </script>
+</body>
+</html>
